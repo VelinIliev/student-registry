@@ -1,4 +1,4 @@
-name: Tests workflow
+name: Buld Test Deploy
 
 on:
   push:
@@ -12,13 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkot code
+      uses: actions/checkout@v3
+
     - name: Use Node.js 18
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 18.x
         cache: 'npm'
     - name: Install dependecies
       run: npm install
     - name: Run tests
       run: npm test
+
+  deploy:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.MY_RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.MY_RENDER_API_KEY }}
